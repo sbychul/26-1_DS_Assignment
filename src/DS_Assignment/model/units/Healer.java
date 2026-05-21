@@ -17,6 +17,9 @@ public class Healer extends Unit {
     // 힐러 고유의 3회 사격 메커니즘 (아군이면 발당 40 치유 / 적군이면 발당 65 피해)
     @Override
     public void act(Unit target) {
+        // 자기 자신은 치유(행동) 불가.
+        if (target == this) return;
+
         // 내 생사 여부 및 타겟의 유효성 검증
         if (!isAlive() || target == null || !target.isAlive()) return;
 
@@ -44,10 +47,10 @@ public class Healer extends Unit {
         // 주사위 결과에 따른 최종 효과 적용
         if (hitCount > 0) {
             if (isAllied) {
-                System.out.println(String.format("💖 [명중 판정] 3회 사격 중 %d회 명중! (총 %d의 아군 체력 회복)", hitCount, totalEffect));
+                System.out.println(String.format("⚕\uFE0F [결과] 3회 사격 중 %d회 명중! (총 %d의 아군 체력 회복)", hitCount, totalEffect));
                 target.heal(totalEffect);
             } else {
-                System.out.println(String.format("🎯 [명중 판정] 3회 사격 중 %d회 명중! (총 %d의 기본 피해)", hitCount, totalEffect));
+                System.out.println(String.format("🎯 [결과] 3회 사격 중 %d회 명중! (총 %d의 기본 피해)", hitCount, totalEffect));
 
                 /* * [주의] 적군에게 피해를 입힐 때는 피격 유닛이 속한 노드에
                  * 상대 팀 탱커가 존재하여 패시브(20% 감면)가 켜지는지
@@ -57,7 +60,7 @@ public class Healer extends Unit {
                 target.takeDamage(totalEffect);
             }
         } else {
-            System.out.println("💨 [명중 판정] 모든 사격이 전장의 허공을 가릅니다!");
+            System.out.println("💨 [결과] 모든 사격이 빗나갔습니다..");
         }
     }
 }

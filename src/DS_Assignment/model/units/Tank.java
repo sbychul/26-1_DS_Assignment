@@ -45,7 +45,7 @@ public class Tank extends Unit {
              */
             target.takeDamage(totalDamage);
         } else {
-            System.out.println("💨 [결과] 모든 공격이 빗나갔습니다!");
+            System.out.println("💨 [결과] 모든 공격이 빗나갔습니다..");
         }
     }
 }

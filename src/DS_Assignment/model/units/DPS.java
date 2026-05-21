@@ -54,7 +54,7 @@ public class DPS extends Unit {
              */
             target.takeDamage(totalDamage);
         } else {
-            System.out.println("💨 [결과] 10발이 모두 빗나갔습니다... (어떻게..?)");
+            System.out.println("💨 [결과] 10발이 모두 빗나갔습니다...");
         }
     }
 }
