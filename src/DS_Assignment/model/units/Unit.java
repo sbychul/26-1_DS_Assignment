@@ -77,8 +77,8 @@ public abstract class Unit {
 
     @Override
     public String toString() {
-        return String.format("[%s] 위치(노드): %d | HP: %d/%d | 상태: %s",
-                getDisplayName(), currentNodeId, hp, maxHp, isAlive() ? "생존" : "사망(큐 대기)");
+        return String.format("[%s] 위치(노드): %s | HP: %d/%d | 상태: %s",
+                getDisplayName(), currentNodeId, hp, maxHp, isAlive() ? "생존" : "사망(부활 대기)");
     }
 
     // 외부 및 자식 클래스 접근을 위한 Getter / Setter

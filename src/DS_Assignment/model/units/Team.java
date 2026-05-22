@@ -2,8 +2,8 @@ package DS_Assignment.model.units;
 
 // 팀을 나누기 위한 enum
 public enum Team {
-    A("🟦"),
-    B("🟥");
+    A("\uD83D\uDD35"),
+    B("\uD83D\uDD34");
 
     // 팀별 색상을 나타내는 아이콘 저장
     private final String icon;
