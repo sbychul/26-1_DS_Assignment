@@ -1,9 +1,11 @@
 package DS_Assignment.model.units;
 
+import DS_Assignment.model.graph.NodeName;
+
 public class Tank extends Unit {
 
     // 생성자: Tank의 고정 스탯(HP 350, ATK 85)을 부모 생성자에 주입 및 위치 난수 팀 설정
-    public Tank(int spawnNodeId, int accSeed, Team team) {
+    public Tank(NodeName spawnNodeId, int accSeed, Team team) {
         super(350, 85, spawnNodeId, accSeed, team);
     }
 
@@ -19,7 +21,7 @@ public class Tank extends Unit {
         // 내 생사 여부 및 타겟의 유효성 검증
         if (!isAlive() || target == null || !target.isAlive()) return;
 
-        System.out.println(String.format("🛡️ [%s]의 턴, [%d] 노드에 있는 적 [%s]을(를) 타격합니다.",
+        System.out.println(String.format("🛡️ [%s]의 턴, [%s] 노드에 있는 적 [%s]을(를) 타격합니다.",
                 this.getDisplayName(), this.getCurrentNodeId(), target.getDisplayName()));
 
         int hitCount = 0;

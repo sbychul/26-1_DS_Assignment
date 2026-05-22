@@ -1,9 +1,11 @@
 package DS_Assignment.model.units;
 
+import DS_Assignment.model.graph.NodeName;
+
 public class DPS extends Unit {
 
     // 생성자: DPS의 고정 스탯(HP 200, ATK 30)을 부모 생성자에 주입 및 위치, 난수, 팀 설정
-    public DPS(int spawnNodeId, int accSeed, Team team) {
+    public DPS(NodeName spawnNodeId, int accSeed, Team team) {
         super(200, 30, spawnNodeId, accSeed, team);
     }
 
@@ -19,7 +21,7 @@ public class DPS extends Unit {
         // 내 생사 여부 및 타겟의 유효성 검증
         if (!isAlive() || target == null || !target.isAlive()) return;
 
-        System.out.println(String.format("⚔️ [%s]의 턴, [%d] 노드에 있는 적 [%s]을(를) 10회 사격합니다.",
+        System.out.println(String.format("⚔️ [%s]의 턴, [%s] 노드에 있는 적 [%s]을(를) 10회 사격합니다.",
                 this.getDisplayName(), this.getCurrentNodeId(), target.getDisplayName()));
 
         int hitCount = 0;

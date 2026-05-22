@@ -1,10 +1,12 @@
 package DS_Assignment.model.units;
 
+import DS_Assignment.model.graph.NodeName;
+
 public class Healer extends Unit {
 
     // 생성자: Healer의 고정 스탯(HP 200, 적 대상 공격력 65)을 부모 생성자에 주입 및 위치, 난수, 팀 설정
     // 치유량 40은 아군 대상 적용 시 내부 상수로 처리, 부모에게는 기본 공격력인 65를 전달.
-    public Healer(int spawnNodeId, int accSeed, Team team) {
+    public Healer(NodeName spawnNodeId, int accSeed, Team team) {
         super(200, 65, spawnNodeId, accSeed, team);
     }
 
@@ -27,7 +29,7 @@ public class Healer extends Unit {
         boolean isAllied = (this.getTeam() == target.getTeam());
         String actionText = isAllied ? "치유 사격을 개시합니다. ➕" : "대응 사격을 개시합니다. ☄️";
 
-        System.out.println(String.format("🔮 [%s]의 턴! [%d] 노드에 있는 %s [%s]에게 %s",
+        System.out.println(String.format("🔮 [%s]의 턴! [%s] 노드에 있는 %s [%s]에게 %s",
                 this.getDisplayName(), this.getCurrentNodeId(),
                 isAllied ? "아군" : "적군", target.getDisplayName(), actionText));
 

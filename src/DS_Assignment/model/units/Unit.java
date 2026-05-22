@@ -1,5 +1,7 @@
 package DS_Assignment.model.units;
 
+import DS_Assignment.model.graph.NodeName;
+
 import java.util.Random;
 
 public abstract class Unit {
@@ -7,8 +9,8 @@ public abstract class Unit {
     private int hp;
     private final int maxHp;
     private final int damage;
-    private int currentNodeId;
-    private int previousNodeId;
+    private NodeName currentNodeId;
+    private NodeName previousNodeId;
     private final Team team;
 
     // 고정 시드 상수 필드 및 난수 생성기
@@ -16,12 +18,12 @@ public abstract class Unit {
     protected Random random;    // 자식 클래스에서 독립 베르누이 시행에 접근할 수 있도록 protected 유지
 
     // 생성자
-    public Unit(int maxHp, int damage, int spawnNodeId, int accSeed, Team team) {
+    public Unit(int maxHp, int damage, NodeName spawnNodeId, int accSeed, Team team) {
         this.maxHp = maxHp;
         this.hp = maxHp;
         this.damage = damage;
         this.currentNodeId = spawnNodeId;
-        this.previousNodeId = -1; // 막 부활 혹은 초기 상태, 이전 방문 노드 없음.
+        this.previousNodeId = null; // 막 부활 혹은 초기 상태, 이전 방문 노드 없음.
         this.team = team;
 
         // 상수 필드 초기화 및 해당 시드로 개별 난수 생성기 가동
@@ -39,7 +41,7 @@ public abstract class Unit {
     public String getDisplayName() { return getTeam().getIcon() + " " + getRoleName(); }
 
     // [공통 메서드] 이동 로직
-    public void move(int targetNodeId) {
+    public void move(NodeName targetNodeId) {
         if (!isAlive()) return;
         this.previousNodeId = this.currentNodeId;
         this.currentNodeId = targetNodeId;
@@ -51,10 +53,10 @@ public abstract class Unit {
     }
 
     // [공통 메서드] 부활 로직 (상태 초기화)
-    public void respawn(int spawnNodeId) {
+    public void respawn(NodeName spawnNodeId) {
         this.hp = this.maxHp;
         this.currentNodeId = spawnNodeId;
-        this.previousNodeId = -1;
+        this.previousNodeId = null;
         // 부활 시 난수 시드 흐름을 초기 상태로 리셋하고 싶다면 아래 주석을 해제하세요.
         // this.random = new Random(accSeed); 
     }
@@ -83,10 +85,10 @@ public abstract class Unit {
     public int getHp() { return hp; }
     public int getMaxHp() { return maxHp; }
     public int getDamage() { return damage; }
-    public int getCurrentNodeId() { return currentNodeId; }
+    public NodeName getCurrentNodeId() { return currentNodeId; }
     public Team getTeam() { return this.team; }
-    public int getPreviousNodeId() { return previousNodeId; }
-    public void setPreviousNodeId(int previousNodeId) { this.previousNodeId = previousNodeId; }
+    public NodeName getPreviousNodeId() { return previousNodeId; }
+    public void setPreviousNodeId(NodeName previousNodeId) { this.previousNodeId = previousNodeId; }
 
     // accSeed 조회를 위한 Getter (상수이므로 Setter는 불필요)
     public int getAccSeed() { return accSeed; }
