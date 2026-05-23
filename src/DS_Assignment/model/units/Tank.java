@@ -2,6 +2,9 @@ package DS_Assignment.model.units;
 
 import DS_Assignment.model.graph.NodeName;
 
+import java.util.List;
+import java.util.Map;
+
 public class Tank extends Unit {
 
     // 생성자: Tank의 고정 스탯(HP 350, ATK 85)을 부모 생성자에 주입 및 위치 난수 팀 설정
@@ -17,7 +20,7 @@ public class Tank extends Unit {
 
     // 탱커 고유의 2회 타격 공격 메커니즘
     @Override
-    public void act(Unit target) {
+    public void act(Unit target, Map<NodeName, List<Unit>> occupancyMap) {
         // 내 생사 여부 및 타겟의 유효성 검증
         if (!isAlive() || target == null || !target.isAlive()) return;
 
@@ -40,12 +43,9 @@ public class Tank extends Unit {
         if (hitCount > 0) {
             System.out.println(String.format("🎯 [결과] 2회의 공격 중 %d회 명중! (총 %d의 기본 피해)", hitCount, totalDamage));
 
-            /* * [주의] 실제 데미지를 입힐 때는 피격 유닛이 속한 노드에
-             * 상대 팀 탱커가 존재하여 패시브(20% 감면)가 켜지는지
-             * GameManager 단계에서 해시 테이블을 조회하여 최종 데미지를 가공한 뒤
-             * target.takeDamage(finalDamage); 로 호출하는 것을 강력히 권장합니다.
-             */
-            target.takeDamage(totalDamage);
+            // 탱커 패시브 적용되는 지 확인 (최종 피해량 연산)
+            int finalDamage = applyTankPassive(target, totalDamage, occupancyMap);
+            target.takeDamage(finalDamage);
         } else {
             System.out.println("💨 [결과] 모든 공격이 빗나갔습니다..");
         }

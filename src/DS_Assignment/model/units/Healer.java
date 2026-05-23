@@ -2,6 +2,9 @@ package DS_Assignment.model.units;
 
 import DS_Assignment.model.graph.NodeName;
 
+import java.util.List;
+import java.util.Map;
+
 public class Healer extends Unit {
 
     // 생성자: Healer의 고정 스탯(HP 200, 적 대상 공격력 65)을 부모 생성자에 주입 및 위치, 난수, 팀 설정
@@ -18,7 +21,7 @@ public class Healer extends Unit {
 
     // 힐러 고유의 3회 사격 메커니즘 (아군이면 발당 40 치유 / 적군이면 발당 65 피해)
     @Override
-    public void act(Unit target) {
+    public void act(Unit target, Map<NodeName, List<Unit>> occupancyMap) {
         // 자기 자신은 치유(행동) 불가.
         if (target == this) return;
 
@@ -53,13 +56,9 @@ public class Healer extends Unit {
                 target.heal(totalEffect);
             } else {
                 System.out.println(String.format("🎯 [결과] 3회 사격 중 %d회 명중! (총 %d의 기본 피해)", hitCount, totalEffect));
-
-                /* * [주의] 적군에게 피해를 입힐 때는 피격 유닛이 속한 노드에
-                 * 상대 팀 탱커가 존재하여 패시브(20% 감면)가 켜지는지
-                 * GameManager 단계에서 해시 테이블을 조회하여 최종 데미지를 가공한 뒤
-                 * target.takeDamage(finalDamage); 로 호출하는 것을 권장합니다.
-                 */
-                target.takeDamage(totalEffect);
+                // 탱커 패시브 적용되는 지 확인 (최종 피해량 연산)
+                int finalDamage = applyTankPassive(target, totalEffect, occupancyMap);
+                target.takeDamage(finalDamage);
             }
         } else {
             System.out.println("💨 [결과] 모든 사격이 빗나갔습니다..");

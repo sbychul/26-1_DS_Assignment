@@ -2,6 +2,8 @@ package DS_Assignment.model.units;
 
 import DS_Assignment.model.graph.NodeName;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public abstract class Unit {
@@ -35,7 +37,23 @@ public abstract class Unit {
     public abstract String getRoleName();
 
     // [추상 메서드] 자식 클래스별 고유 공격(및 치유) 메커니즘 구현
-    public abstract void act(Unit target);
+    public abstract void act(Unit target, Map<NodeName, List<Unit>> occupancyMap);
+
+    // [공통 메서드] 피격 직전 탱커 패시브 검증할 메소드
+    protected int applyTankPassive(Unit target, int incomingDamage, Map<NodeName, List<Unit>> occupancyMap) {
+        List<Unit> unitsAtNode = occupancyMap.get(target.getCurrentNodeId());
+
+        if (unitsAtNode != null) {
+            for (Unit u : unitsAtNode) {
+                // 공격당하는 타겟(target)과 같은 팀이면서, 살아있는 탱커가 해당 노드에 존재한다면!
+                if (u.getTeam() == target.getTeam() && u.getRoleName().equals("Tank") && u.isAlive()) {
+                    // 데미지 20% 감면 (0.8배 정수 변환)
+                    return (int) (incomingDamage * 0.8);
+                }
+            }
+        }
+        return incomingDamage; // 탱커가 없다면 원본 데미지 반환
+    }
 
     // [공통 메서드] 팀과 이름을 한 번에 반환
     public String getDisplayName() { return getTeam().getIcon() + " " + getRoleName(); }

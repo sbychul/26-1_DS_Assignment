@@ -115,7 +115,7 @@ public class SimulatorManager {
                 if (!hasMoved) {
                     Unit actionTarget = selectTarget(activeUnit);
                     if (actionTarget != null) {
-                        activeUnit.act(actionTarget);
+                        activeUnit.act(actionTarget, occupancyMap);
                         // 행동 직후 사망자 발생 시 리스폰 큐 인입 처리
                         checkQueueDeath(actionTarget);
                     }
