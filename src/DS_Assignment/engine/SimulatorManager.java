@@ -135,12 +135,12 @@ public class SimulatorManager {
                 break;
             }
 
-            // 로그가 너무 빨리 지나가서 0.5초 대기 추가 (연출)
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                System.out.println("대기 과정 중 오류가 발생하였습니다.");
-            }
+            // 로그가 너무 빨리 지나가서 0.5초 대기 추가, 활성화하려면 주석 해제.
+            // try {
+            //     Thread.sleep(500);
+            // } catch (InterruptedException e) {
+            //     System.out.println("대기 과정 중 오류가 발생하였습니다.");
+            // }
         }
         System.out.println(String.format("\n🏆 승리: %s 팀!", scoreA >= 100 ? "BLUE(A)" : "RED(B)"));
     }

@@ -45,7 +45,7 @@ public abstract class Unit {
 
         if (unitsAtNode != null) {
             for (Unit u : unitsAtNode) {
-                // 공격당하는 타겟(target)과 같은 팀이면서, 살아있는 탱커가 해당 노드에 존재한다면!
+                // 공격당하는 타겟(target)과 같은 팀이면서, 살아있는 탱커가 해당 노드에 존재한다면
                 if (u.getTeam() == target.getTeam() && u.getRoleName().equals("Tank") && u.isAlive()) {
                     // 데미지 20% 감면 (0.8배 정수 변환)
                     return (int) (incomingDamage * 0.8);
@@ -75,8 +75,6 @@ public abstract class Unit {
         this.hp = this.maxHp;
         this.currentNodeId = spawnNodeId;
         this.previousNodeId = null;
-        // 부활 시 난수 시드 흐름을 초기 상태로 리셋하고 싶다면 아래 주석을 해제하세요.
-        // this.random = new Random(accSeed); 
     }
 
     // [공통 메서드] 피격 및 치유
@@ -108,6 +106,6 @@ public abstract class Unit {
     public NodeName getPreviousNodeId() { return previousNodeId; }
     public void setPreviousNodeId(NodeName previousNodeId) { this.previousNodeId = previousNodeId; }
 
-    // accSeed 조회를 위한 Getter (상수이므로 Setter는 불필요)
+    // accSeed 조회를 위한 Getter
     public int getAccSeed() { return accSeed; }
 }
