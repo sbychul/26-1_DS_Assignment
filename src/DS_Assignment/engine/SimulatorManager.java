@@ -108,8 +108,16 @@ public class SimulatorManager {
                         }
                     }
 
-                    // 직전 노드 재진입은 막되, 스폰처럼 다른 이동 가능 노드가 없으면 허용
-                    if (!returnsToPrevious || !hasAlternativeMove) {
+                    // 아군 힐러 피격 시 긴급 구출 노드로 진입하려는지 판정하는 로직 추가
+                    Unit myHealer = findUnit(activeUnit.getTeam(), "Healer");
+                    boolean isEmergency = false;
+                    if (myHealer != null && myHealer.isAlive()) {
+                        isEmergency = (!getEnemiesAtNode(myHealer.getCurrentNodeId(), activeUnit.getTeam()).isEmpty())
+                                && (targetNode == myHealer.getCurrentNodeId());
+                    }
+
+                    // 직전 노드 재진입은 막되, 스폰처럼 다른 이동 가능 노드가 없거나 긴급 구출 상황이면 허용
+                    if (!returnsToPrevious || !hasAlternativeMove || isEmergency) {
                         // 해시 테이블 동기화
                         occupancyMap.get(activeUnit.getCurrentNodeId()).remove(activeUnit);
                         activeUnit.move(nextNode);
@@ -122,6 +130,9 @@ public class SimulatorManager {
                 // 진입한 유닛은 다음 라운드부터 공격할 수 있음
                 // 이번 턴에 이동하지 않고 제자리를 지켰거나 이미 교전 중이었던 유닛만 행동(Act).
                 if (!hasMoved) {
+                    // 제자리 대기 시 다음 턴 자유 기동을 위해 직전 라운드 이동 제약 초기화.
+                    activeUnit.setPreviousNodeId(null);
+
                     Unit actionTarget = selectTarget(activeUnit);
                     if (actionTarget != null) {
                         activeUnit.act(actionTarget, occupancyMap);
@@ -190,12 +201,24 @@ public class SimulatorManager {
                 // 거점 확보 전이면 무조건 거점(P), 확보 완료 시 상대 Tank 추격
                 if (pointOwner == myTeam) {
                     Unit enemyTank = findUnit(enemyTeam, "Tank");
-                    if (enemyTank != null && enemyTank.isAlive()) return enemyTank.getCurrentNodeId();
+                    if (enemyTank != null && enemyTank.isAlive()) {
+                        NodeName enemySpawn = (enemyTeam == Team.A) ? NodeName.SPAWN_A : NodeName.SPAWN_B; // 적 본진 스폰 노드 식별
+                        if (enemyTank.getCurrentNodeId() == enemySpawn) return NodeName.P; // 적 탱커가 적 본진에 있다면 스폰킬 방지를 위해 거점으로 복귀
+                        return enemyTank.getCurrentNodeId();
+                    }
                     // 탱커 사망 시 살아있는 잔여 상대 추격 (우선순위: Healer > DPS)
                     Unit enemyHealer = findUnit(enemyTeam, "Healer");
-                    if (enemyHealer != null && enemyHealer.isAlive()) return enemyHealer.getCurrentNodeId();
+                    if (enemyHealer != null && enemyHealer.isAlive()) {
+                        NodeName enemySpawn = (enemyTeam == Team.A) ? NodeName.SPAWN_A : NodeName.SPAWN_B; // 적 본진 스폰 노드 식별
+                        if (enemyHealer.getCurrentNodeId() == enemySpawn) return NodeName.P; // 적 힐러가 적 본진에 있다면 스폰킬 방지를 위해 거점으로 복귀
+                        return enemyHealer.getCurrentNodeId();
+                    }
                     Unit enemyDps = findUnit(enemyTeam, "DPS");
-                    if (enemyDps != null && enemyDps.isAlive()) return enemyDps.getCurrentNodeId();
+                    if (enemyDps != null && enemyDps.isAlive()) {
+                        NodeName enemySpawn = (enemyTeam == Team.A) ? NodeName.SPAWN_A : NodeName.SPAWN_B; // 적 본진 스폰 노드 식별
+                        if (enemyDps.getCurrentNodeId() == enemySpawn) return NodeName.P; // 적 딜러가 적 본진에 있다면 스폰킬 방지를 위해 거점으로 복귀
+                        return enemyDps.getCurrentNodeId();
+                    }
                 }
                 return NodeName.P;
 
@@ -203,6 +226,10 @@ public class SimulatorManager {
                 // 최우선 목적지는 상대방 Healer, 사망 시 거점(P)
                 Unit enemyHeal = findUnit(enemyTeam, "Healer");
                 if (enemyHeal != null && enemyHeal.isAlive()) {
+                    NodeName enemySpawn = (enemyTeam == Team.A) ? NodeName.SPAWN_A : NodeName.SPAWN_B; // 적 본진 스폰 노드 식별
+                    if (pointOwner != myTeam && enemyHeal.getCurrentNodeId() == enemySpawn) { // 거점을 점령하지 못했거나 적이 본진에 있다면 스폰킬 방지
+                        return NodeName.P; // 거점으로 목적지 강제 전환
+                    }
                     return enemyHeal.getCurrentNodeId();
                 }
                 return NodeName.P;
