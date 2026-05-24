@@ -99,8 +99,17 @@ public class SimulatorManager {
                 if (path.size() > 1) {
                     NodeName nextNode = path.get(1); // 경로의 바로 다음 칸
 
-                    // 직전 라운드 머물렀던 노드 재진입 방지
-                    if (nextNode != activeUnit.getPreviousNodeId()) {
+                    boolean returnsToPrevious = nextNode == activeUnit.getPreviousNodeId();
+                    boolean hasAlternativeMove = false;
+                    for (NodeName neighbor : graph.getNeighbors(activeUnit.getCurrentNodeId())) {
+                        if (neighbor != activeUnit.getPreviousNodeId()) {
+                            hasAlternativeMove = true;
+                            break;
+                        }
+                    }
+
+                    // 직전 노드 재진입은 막되, 스폰처럼 다른 이동 가능 노드가 없으면 허용
+                    if (!returnsToPrevious || !hasAlternativeMove) {
                         // 해시 테이블 동기화
                         occupancyMap.get(activeUnit.getCurrentNodeId()).remove(activeUnit);
                         activeUnit.move(nextNode);
@@ -329,7 +338,7 @@ public class SimulatorManager {
 
     // K+3 라운드 리스폰 선입선출 제어 메소드
     private void processRespawn(Queue<RespawnEntry> queue, NodeName spawnNode) {
-        if (!queue.isEmpty() && queue.peek().respawnRound == currentRound) {
+        while (!queue.isEmpty() && queue.peek().respawnRound <= currentRound) {
             RespawnEntry entry = queue.poll();
             Unit u = entry.unit;
             u.respawn(spawnNode); // 상태 초기화 및 재생성
